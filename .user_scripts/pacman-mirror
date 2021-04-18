@@ -1,0 +1,3 @@
+#!/bin/sh
+
+reflector -c 'Serbia' -c 'Hungary' -c 'Romania' --verbose --protocol https --sort rate -f 10 --save /etc/pacman.d/mirrorlist && pacman -Syy
