@@ -1,8 +1,26 @@
 #!/bin/sh
+set -e
 
-if [[ $(whoami) != root  ]]; then
-	echo "You are not root. You must run this script as root."
+# Checking the sudo
+if [[ $EUID -ne 0  ]]; then
+	echo "You are not root. You must run this script as root / sudo user."
 	exit
 fi
 
-reflector -c 'Serbia' -c 'Hungary' -c 'Romania' --verbose --protocol https --sort rate -f 10 --save /etc/pacman.d/mirrorlist && pacman -Syy
+# Checking dependency
+if ! command -v reflector &> /dev/null; then
+	echo "Required dependency reflector not detected."
+
+	while true; do
+		read -p "Install reflector? [Y/n]"
+
+		case $REPLY in
+			[yY]|"" ) pacman -Sy --needed --noconfirm reflector; break;;
+			[nN] ) echo "The script cannot continue. Aborting."; exit;;
+			* ) continue;;
+		esac
+	done
+
+fi
+
+reflector -c 'Greece' -c 'Serbia' -c 'Hungary' -c 'Romania' --verbose --protocol https --sort rate -f 10 --save /etc/pacman.d/mirrorlist && pacman -Syy
