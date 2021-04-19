@@ -3,6 +3,8 @@
 !.gitignore
 !.vimrc
 !.xinitrc
+!LICENSE
+!README.md
 
 !.config
 .config/*
