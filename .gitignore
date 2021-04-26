@@ -1,8 +1,7 @@
 /*
-!.bashrc
 !.gitignore
 !.vimrc
-!.xinitrc
+!.zshrc
 !LICENSE
 !README.md
 
@@ -12,8 +11,6 @@
 !.config/awesome/*
 !.config/termite
 !.config/termite/*
-
-!.poshthemes
 
 !.user_scripts
 
