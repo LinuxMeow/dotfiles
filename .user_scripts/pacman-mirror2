@@ -1,0 +1,95 @@
+#!/bin/sh
+
+# Set exit on error
+set -e
+
+# Colours declaration
+red="\033[0;31m"
+yellow="\033[0;33m"
+end="\033[0m"
+
+# Checking the root access
+if [ "$(id -u)" -ne 0 ]; then
+	printf "You need to run this script as %sroot%s or %ssudo%s user." "$red" "$end" "$red" "$end"
+	exit
+fi
+
+# Declaring dependencies
+deps=("reflector")
+declare -a missingdeps
+
+# Declaring optional dependencies
+optdeps=("rsync")
+declare -a missingoptdeps
+
+# Checking dependencies
+for dep in ${deps[@]}; do
+	if ! command -v $dep &> /dev/null; then
+		missingdeps+=("$dep")
+	else
+		continue
+	fi
+done
+
+# Checking optional dependencies
+for optdep in ${optdeps[@]}; do
+	if ! command -v $optdep &> /dev/null; then
+		missingoptdeps+=("$optdep")
+	else
+		continue
+	fi
+done
+
+# Installing missing dependencies
+if [ ${#missingdeps[@]} -gt 0 ]; then
+	echo "Missing dependencies:"
+	echo -e "\t$red${missingdeps[@]}$end"
+
+	while true;do
+	read -p "Install missing dependencies? [Y/n]"
+		case $REPLY in
+			[yY]|"" ) pacman -Sy --needed --noconfirm ${missingdeps[@]}; break;;
+			[nN] ) echo "The script cannot continue. Aborting."; exit;;
+			* ) continue;;
+		esac
+	done
+
+fi
+
+# Installing optional dependencies
+if [ ${#missingoptdeps[@]} -gt 0 ]; then
+	echo "Missing optional dependencies:"
+	echo -e "\t$yellow${missingoptdeps[@]}$end"
+
+	while true;do
+	read -p "Install missing optional dependencies? [Y/n]"
+		case $REPLY in
+			[yY]|"" ) pacman -Sy --needed --noconfirm ${missingoptdeps[@]}; break;;
+			[nN] ) break;;
+			* ) continue;;
+		esac
+	done
+fi
+
+# Declaring array of available servers by country
+declare -a countries
+
+countrycount=$(reflector --list-countries | awk 'NR>2 {print}' | wc -l)
+countries+=$(reflector --list-countries | awk -F'  ' 'NR>2 {print $1 }')
+
+echo "Select your country or the one closest to you."
+
+# Reseting $IFS for select
+OLD_IFS=${IFS};
+IFS=$'\n';
+
+# Generating the country list menu
+select country in $(reflector --list-countries | tail +3 | grep -oP '^((?!\s{2}).)*'); do
+	selectedcountry=$country
+	break;
+done;
+
+# Reverting $IFS to original value
+IFS=${OLD_IFS}
+
+#reflector -c "$selectedcountry" -f 10 --protocol https --verbose --sort rate --save /etc/pacman.d/mirrorlist && pacman -Syy

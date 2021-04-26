@@ -10,8 +10,8 @@
 .config/*
 !.config/awesome
 !.config/awesome/*
-!.config/alacritty
-!.config/alacritty/*
+!.config/termite
+!.config/termite/*
 
 !.poshthemes
 

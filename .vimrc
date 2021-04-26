@@ -26,6 +26,7 @@ syntax on
 set number
 set showmatch
 set encoding=UTF-8
+set splitbelow splitright
 
 call plug#begin('~/.vim/plugged')
 

@@ -52,7 +52,7 @@ end
 beautiful.init(gears.filesystem.get_configuration_dir() .. "themes/modtheme/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "alacritty"
+terminal = "termite"
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 separator = wibox.widget.textbox(' | ')
@@ -205,7 +205,7 @@ awful.screen.connect_for_each_screen(function(s)
     s.mywibox = awful.wibar({
 				position = "top",
 				screen = s,
-				--height = 20
+        height = 15
 			   })
 
     -- Add widgets to the wibox
@@ -576,3 +576,5 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+awful.spawn.with_shell("~/.config/awesome/autorun")

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+function run {
+  if ! pgrep -f $1 ;
+  then
+    $@&
+  fi
+}
+
+run xcompmgr -c
+run pa-applet
+run nm-applet
